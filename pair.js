@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
             if (!sock.authState.creds.registered) {
                 await delay(1500);
                 num = num.replace(/[^0-9]/g, '');
-                const customCode = "RASHUMD"; // Fixed 8-character pairing code
+                const customCode = "QRASHUMD"; // Fixed 8-character pairing code
                 const code = await sock.requestPairingCode(num, customCode);
                 if (!res.headersSent) {
                     await res.send({ code });
