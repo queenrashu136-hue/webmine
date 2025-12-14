@@ -1,17 +1,9 @@
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
 
-// PORT setup (Rende)
+const app = express();
 const PORT = process.env.PORT || 8000;
-
-// Path variable
-const __path = process.cwd();
-
-// Load your routes
-const server = require('./qr');
-const code = require('./pair');
 
 // Avoid memory leak warnings
 require('events').EventEmitter.defaultMaxListeners = 500;
@@ -20,31 +12,33 @@ require('events').EventEmitter.defaultMaxListeners = 500;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Routes
-app.use('/server', server);
-app.use('/code', code);
+// Static files
+app.use(express.static(__dirname));
+
+// Routes (wrap in try-catch to avoid crash)
+try {
+  app.use('/server', require('./qr'));
+  app.use('/code', require('./pair'));
+} catch (e) {
+  console.error("Route load error:", e.message);
+}
+
+// Pages
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'main.html'));
+});
 
 app.get('/pair', (req, res) => {
-  res.sendFile(path.join(__path, 'pair.html'));
+  res.sendFile(path.join(__dirname, 'pair.html'));
 });
 
 app.get('/qr', (req, res) => {
-  res.sendFile(path.join(__path, 'qr.html'));
+  res.sendFile(path.join(__dirname, 'qr.html'));
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__path, 'main.html'));
-});
-
-// Start server (Render detect වෙන්න 0.0.0.0 bind එක)
+// Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ QUEEN-RASHU-MD Server Running
-🌐 URL: http://localhost:${PORT}
-⭐ Don't forget to star QUEEN-RASHU-MD repo!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  `);
+  console.log(`✅ Server running on port ${PORT}`);
 });
 
 module.exports = app;
