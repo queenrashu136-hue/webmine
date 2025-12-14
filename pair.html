@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QUEEN-RASHU-MD PAIR</title>
+  <link rel="stylesheet" href="css/all.min.css" />
+  <style>
+    /* Matrix Background */
+    #matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-image: url("https://files.catbox.moe/wz5ak5.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .box {
+      width: 320px;
+      padding: 25px;
+      text-align: center;
+      background: rgba(255,255,255,0.15);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      animation: fadeIn 1.5s ease;
+    }
+
+    #text {
+      color: #fff;
+    }
+
+    .centered-text {
+      color: #fff;
+      text-align: center;
+    }
+
+    .input-container {
+      display: flex;
+      border-radius: 1rem;
+      background: linear-gradient(45deg, #c5c5c5 0%, #ffffff 100%);
+      padding: 0.3rem;
+      gap: 0.3rem;
+      margin-top: 10px;
+    }
+
+    .input-container input {
+      border-radius: 0.8rem 0 0 0.8rem;
+      background: #e8e8e8;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-left: 2px solid #ff9d9d;
+      color: #5e5e5e;
+      font-size: 14px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .input-container button {
+      padding: 0.8rem;
+      background: linear-gradient(135deg, #8a2be2 0%, #800080 100%);
+      font-weight: 700;
+      text-transform: uppercase;
+      color: white;
+      border: none;
+      border-radius: 0 1rem 1rem 0;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .input-container button:hover {
+      background: linear-gradient(135deg, #32CD32 0%, #008000 100%);
+      color: #fff;
+    }
+
+    .glowing-text {
+      margin-top: 25px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 
+        0 0 5px #FF0000,
+        0 0 15px #FF4500,
+        0 0 30px #FF6347;
+      animation: glow 2s infinite;
+    }
+
+    @keyframes glow {
+      50% { text-shadow: 0 0 15px #32CD32, 0 0 30px #7CFC00; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Music Control */
+    #music-control {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      z-index: 2;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      font-size: 18px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.6);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 240ms ease;
+    }
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal {
+      width: 92%;
+      max-width: 420px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border-radius: 12px;
+      padding: 18px;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      position: relative;
+      transform: translateY(-10px);
+      animation: modalIn 260ms ease forwards;
+      backdrop-filter: blur(6px);
+    }
+    @keyframes modalIn {
+      to { transform: translateY(0); }
+    }
+    .modal h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      text-align: center;
+    }
+    .modal p {
+      margin: 0 0 14px 0;
+      font-size: 13px;
+      text-align: center;
+      opacity: 0.9;
+    }
+    .channel-buttons {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .channel-buttons a {
+      display: inline-block;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-align: center;
+      background: linear-gradient(90deg,#1e90ff, #00bfff);
+      color: white;
+      box-shadow: 0 6px 18px rgba(30,144,255,0.18);
+    }
+    .channel-secondary {
+      background: linear-gradient(90deg,#8a2be2,#800080);
+      box-shadow: 0 6px 18px rgba(138,43,226,0.18);
+    }
+    .modal-small {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 12px;
+      opacity: 0.9;
+    }
+    .modal-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    @media (min-width: 600px) {
+      .channel-buttons {
+        flex-direction: row;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <!-- Modal (small ad asking to follow two channels) -->
+  <div id="follow-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="close">×</button>
+      <h3 id="modalTitle">අපේ චැනල් දෙකට Follow කරන්න!</h3>
+      <p>ඔබට අපේ නවතම updates සහ exclusive links ලැබෙන්න මේ දෙකට follow කරන්න.</p>
+
+      <div class="channel-buttons">
+        <!-- Replace href with your actual channel links -->
+        <a id="chan1" href="https://whatsapp.com/channel/0029VaicB1MISTkGyQ7Bqe23" target="_blank" rel="noopener noreferrer">Follow Channel 1</a>
+        <a id="chan2" class="channel-secondary" href="https://whatsapp.com/channel/0029VaicB1MISTkGyQ7Bqe23" target="_blank" rel="noopener noreferrer">Follow Channel 2</a>
+      </div>
+
+      <div class="modal-small">Follow කරපු පසු බොත්තම click කරලා වෙබ් පිටුවට ආපසු එන්න. (ඔබට අවශ්‍ය නම් skip කරන්න)</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="box">
+      <div id="text">
+        <i class="fa fa-user"></i>
+        <h2 class="centered-text">WHITESHADOW-MD PAIR</h2>
+        <h6>⚙ Enter your number with country code ⚙</h6>
+        <div class="input-container">
+          <input placeholder="947640851XX" type="number" id="number" />
+          <button id="submit">Enter</button>
+        </div>
+        <a id="waiting-message" class="centered-text" style="display: none;">In process...</a><br><br>
+        <main id="pair"></main>
+      </div>
+    </div>
+    <div class="glowing-text">⚡ Powered By WhiteshadoW ⚡</div>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bg-music" src="https://files.catbox.moe/d1d8s6.mp3" autoplay loop></audio>
+  <button id="music-control">🔊</button>
+
+  <script>
+    // Music Control
+    const music = document.getElementById("bg-music");
+    const btn = document.getElementById("music-control");
+    let playing = true;
+
+    btn.addEventListener("click", () => {
+      if (playing) {
+        music.pause();
+        btn.innerText = "🔇";
+      } else {
+        music.play();
+        btn.innerText = "🔊";
+      }
+      playing = !playing;
+    });
+  </script>
+
+  <!-- Matrix Animation Script -->
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const alphabet = "アァイィウヴエェオカガキギクグケゲコゴABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const fontSize = 14;
+    let columns = Math.floor(canvas.width / fontSize);
+    let rainDrops = Array.from({ length: columns }).fill(1);
+
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+
+      // adjust columns if width changed
+      if (Math.floor(canvas.width / fontSize) !== columns) {
+        columns = Math.floor(canvas.width / fontSize);
+        rainDrops = Array.from({ length: columns }).fill(1);
+      }
+
+      rainDrops.forEach((y, index) => {
+        const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+        const x = index * fontSize;
+        ctx.fillText(text, x, y * fontSize);
+
+        if (y * fontSize > canvas.height && Math.random() > 0.975) {
+          rainDrops[index] = 0;
+        }
+        rainDrops[index]++;
+      });
+    }
+    setInterval(draw, 50);
+  </script>
+
+  <!-- Pairing Logic -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"></script>
+  <script>
+    let a = document.getElementById("pair");
+    let b = document.getElementById("submit");
+    let c = document.getElementById("number");
+
+    async function Copy() {
+      let el = document.getElementById("copy");
+      if(!el) return;
+      let text = el.innerText;
+      await navigator.clipboard.writeText(el.innerText.replace('CODE: ', ''));
+      el.innerText = "COPIED ✅";
+      el.style = "color:blue;font-weight:bold";
+      setTimeout(() => {
+        el.innerText = text;
+        el.style = "color:red;font-weight:bold";
+      }, 800);
+    }
+
+    b.addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (!c.value) {
+        a.innerHTML = '<a style="color:red;font-weight:bold">❗ Enter your WhatsApp number with country code.</a><br><br>';
+      } else if (c.value.replace(/[^0-9]/g, "").length < 11) {
+        a.innerHTML = '<a style="color:red;font-weight:bold">❌ Invalid number format ❌</a><br><br>';
+      } else {
+        const bc = c.value.replace(/[^0-9]/g, "");
+        c.type = "text";
+        c.value = "+" + bc;
+        c.style = "color:black;font-size:20px";
+        a.innerHTML = '<a style="color:yellow;font-weight:bold">Please wait 🔎</a><br><br>';
+        try {
+          let { data } = await axios(`/code?number=${bc}`);
+          let code = data.code || "Service Unavailable";
+          a.innerHTML = '<font id="copy" onclick="Copy()" style="color:red;font-weight:bold;cursor:pointer">CODE: <span style="color:black;font-weight:bold">' + code + '</span></font><br><br>';
+        } catch (err) {
+          a.innerHTML = '<a style="color:red;font-weight:bold">Service Error. Try again later.</a><br><br>';
+        }
+      }
+    });
+  </script>
+
+  <!-- Modal Behavior Script -->
+  <script>
+    const modalOverlay = document.getElementById('follow-modal');
+    const modalClose = document.getElementById('modalClose');
+    const chan1 = document.getElementById('chan1');
+    const chan2 = document.getElementById('chan2');
+
+    // show modal after a short delay when page loads
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        modalOverlay.classList.add('show');
+        modalOverlay.setAttribute('aria-hidden', 'false');
+      }, 1200); // 1.2 seconds
+    });
+
+    // Close handler (the "cut" button)
+    modalClose.addEventListener('click', () => {
+      modalOverlay.classList.remove('show');
+      modalOverlay.setAttribute('aria-hidden', 'true');
+    });
+
+    // optional: if user clicks outside modal content, close it
+    modalOverlay.addEventListener('click', (evt) => {
+      if (evt.target === modalOverlay) {
+        modalOverlay.classList.remove('show');
+        modalOverlay.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    // Optional: after user clicks a channel link, auto-close modal (so they return to page)
+    [chan1, chan2].forEach((el) => {
+      el.addEventListener('click', () => {
+        // small delay to allow link open in new tab, then close
+        setTimeout(() => {
+          modalOverlay.classList.remove('show');
+          modalOverlay.setAttribute('aria-hidden', 'true');
+        }, 400);
+      });
+    });
+  </script>
+</body>
+</html>
